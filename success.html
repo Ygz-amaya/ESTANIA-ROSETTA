@@ -20,11 +20,7 @@ body {
   overflow: hidden;
 }
 
-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-}
+canvas { position: fixed; inset: 0; z-index: 0; }
 
 .container {
   position: relative;
@@ -33,6 +29,7 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .card {
@@ -46,18 +43,22 @@ canvas {
               inset 0 1px 0 rgba(255,255,255,0.6);
   text-align: center;
   animation: fadeUp 1.2s ease;
+  transform-style: preserve-3d;
+  transition: box-shadow 0.4s ease;
 }
 
 .sigil {
   font-size: 52px;
   margin-bottom: 18px;
   animation: float 4s ease-in-out infinite;
+  transform: translateZ(50px);
 }
 
 .title {
   font-size: 36px;
   letter-spacing: 3px;
   margin-bottom: 18px;
+  transform: translateZ(40px);
 }
 .title span {
   font-family: 'UnifrakturCook', cursive;
@@ -71,11 +72,31 @@ canvas {
   font-size: 16px;
   line-height: 1.6;
   opacity: 0.9;
+  transform: translateZ(30px);
 }
 
+/* Footer */
+.footer {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #555;
+  text-align: center;
+  z-index:2;
+  font-family: 'Cinzel', serif;
+}
+
+/* Animations */
 @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
 @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .card { width: 90%; padding: 30px 20px; }
+  .title { font-size: 28px; letter-spacing: 2px; }
+  .sigil { font-size: 36px; margin-bottom: 14px; }
+  .message { font-size: 14px; }
+}
 </style>
 </head>
 
@@ -84,7 +105,7 @@ canvas {
 <canvas id="particles"></canvas>
 
 <div class="container">
-  <div class="card">
+  <div class="card" id="card">
     <div class="sigil">❈</div>
 
     <div class="title">
@@ -97,54 +118,88 @@ canvas {
       We’ll notify you when the gates open.
     </div>
   </div>
+
+  <div class="footer">Created by ygz.amaya</div>
 </div>
+
+<!-- Visible cursor orb -->
+<div id="orb" style="
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.1) 70%, rgba(255,255,255,0) 100%);
+  filter: blur(40px);
+  transform: translate(-50%, -50%);
+"></div>
 
 <script>
 /* PARTICLES */
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
-
-function resize() {
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener("resize", resize);
 
 const symbols = ["❈","✶","✦","❂","✹","☉","☿","✵"];
-
-const particles = Array.from({ length: 45 }, () => ({
-  x: Math.random() * canvas.width,
-  y: Math.random() * canvas.height,
-  size: Math.random() * 26 + 14,
-  speed: Math.random() * 0.3 + 0.1,
-  opacity: Math.random() * 0.4 + 0.3,
-  symbol: symbols[Math.floor(Math.random() * symbols.length)],
-  rotation: Math.random() * Math.PI * 2,
-  rotSpeed: (Math.random() - 0.5) * 0.008
+let particlesCount = innerWidth < 480 ? 25 : 45; 
+const particles = Array.from({length:particlesCount},()=>({
+  x: Math.random()*canvas.width,
+  y: Math.random()*canvas.height,
+  size: Math.random()*26+14,
+  speed: Math.random()*0.3+0.1,
+  opacity: Math.random()*0.4+0.3,
+  symbol: symbols[Math.floor(Math.random()*symbols.length)],
+  rotation: Math.random()*Math.PI*2,
+  rotSpeed: (Math.random()-0.5)*0.008
 }));
 
 function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.y -= p.speed;
-    p.rotation += p.rotSpeed;
-    if (p.y < -40) {
-      p.y = canvas.height + 40;
-      p.x = Math.random() * canvas.width;
-    }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.y-=p.speed; p.rotation+=p.rotSpeed;
+    if(p.y<-40){p.y=canvas.height+40;p.x=Math.random()*canvas.width;}
     ctx.save();
-    ctx.globalAlpha = p.opacity;
-    ctx.translate(p.x, p.y);
+    ctx.globalAlpha=p.opacity;
+    ctx.translate(p.x,p.y);
     ctx.rotate(p.rotation);
-    ctx.font = `${p.size}px Cinzel`;
-    ctx.fillStyle = "rgba(0,0,0,0.55)";
-    ctx.fillText(p.symbol, 0, 0);
+    ctx.font=`${p.size}px Cinzel`;
+    ctx.fillStyle="rgba(0,0,0,0.55)";
+    ctx.fillText(p.symbol,0,0);
     ctx.restore();
   });
   requestAnimationFrame(animate);
 }
 animate();
+
+/* Cursor orb + card parallax */
+const orb = document.getElementById("orb");
+const card = document.getElementById("card");
+let mx=innerWidth/2, my=innerHeight/2, ox=mx, oy=my, vx=0, vy=0, tx=0, ty=0;
+
+document.addEventListener("mousemove", e=>{
+  mx=e.clientX; my=e.clientY;
+  const r=card.getBoundingClientRect();
+  tx=((mx-r.left)/r.width-0.5)*10;
+  ty=((my-r.top)/r.height-0.5)*10;
+});
+
+(function animateOrb(){
+  vx+=(mx-ox)*0.15; vy+=(my-oy)*0.15; vx*=0.85; vy*=0.85; ox+=vx; oy+=vy;
+  orb.style.left=ox+"px"; orb.style.top=oy+"px";
+  requestAnimationFrame(animateOrb);
+})();
+
+(function animateCard(){
+  let rx=0, ry=0;
+  function loop(){
+    rx+=(tx-rx)*0.06; ry+=(ty-ry)*0.06;
+    card.style.transform=`rotateX(${-ry}deg) rotateY(${rx}deg)`;
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
 </script>
 
 </body>
