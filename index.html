@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Estania Rosetta</title>
+<title>Estania Rosetta — Coming Soon</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Luxury Serif -->
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
-
-<!-- Old English -->
 <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
 
 <style>
@@ -17,19 +15,17 @@
 body {
   font-family: 'Cinzel', serif;
   height: 100vh;
-  overflow: hidden;
   background: radial-gradient(circle at top, #f8f8f8, #e6e6e6);
   color: #222;
+  overflow: hidden;
 }
 
-/* Canvas */
 canvas {
   position: fixed;
   inset: 0;
   z-index: 0;
 }
 
-/* Center layout */
 .container {
   position: relative;
   z-index: 2;
@@ -39,7 +35,6 @@ canvas {
   align-items: center;
 }
 
-/* Glass Card */
 .card {
   width: 360px;
   padding: 40px 30px;
@@ -49,58 +44,45 @@ canvas {
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow: 0 25px 60px rgba(0,0,0,0.25),
               inset 0 1px 0 rgba(255,255,255,0.6);
-  animation: fadeUp 1.2s ease;
   text-align: center;
+  animation: fadeUp 1.2s ease;
 }
 
-/* Sigil */
 .sigil {
   font-size: 48px;
   margin-bottom: 18px;
   animation: float 4s ease-in-out infinite;
 }
 
-/* Title */
 .title {
   font-size: 36px;
   letter-spacing: 3px;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 .title span {
   font-family: 'UnifrakturCook', cursive;
   display: inline-block;
   animation: bounce 2.2s infinite;
-  position: relative;
 }
 .title span { animation-delay: calc(var(--i) * 0.08s); }
 
-/* Inputs */
 input {
   width: 100%;
   padding: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.1);
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.85);
   font-size: 15px;
   outline: none;
-  transition: all .3s ease;
+  transition: .3s;
 }
+
 input:focus {
   transform: scale(1.03);
   box-shadow: 0 0 12px rgba(255,255,255,.8);
 }
 
-/* Password row */
-.password-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  margin-bottom: 15px;
-}
-.show { cursor: pointer; font-weight: bold; }
-
-/* Button */
 button {
   width: 100%;
   padding: 14px;
@@ -112,18 +94,17 @@ button {
   cursor: pointer;
   transition: transform .3s ease;
 }
+
 button:hover { transform: translateY(-3px); }
 
-/* Error */
 .error {
-  margin-top: 15px;
+  margin-top: 14px;
   font-size: 13px;
-  opacity: 0;
   color: #b71c1c;
+  opacity: 0;
   transition: .4s;
 }
 
-/* Animations */
 @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
 @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
@@ -143,37 +124,34 @@ button:hover { transform: translateY(-3px); }
       <span style="--i:8">R</span><span style="--i:9">O</span><span style="--i:10">S</span><span style="--i:11">E</span><span style="--i:12">T</span><span style="--i:13">T</span><span style="--i:14">A</span>
     </div>
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <!-- NETLIFY WAITLIST FORM -->
+    <form name="waitlist" method="POST" data-netlify="true" action="/success.html" onsubmit="return validateForm()">
+      <input type="hidden" name="form-name" value="waitlist">
 
-    <div class="password-row">
-      <span>🔒 Password</span>
-      <span class="show" onclick="toggle()">SHOW</span>
-    </div>
+      <input type="email" name="email" id="email" placeholder="Enter your email" required>
 
-    <button onclick="validate()">SUBMIT</button>
+      <button type="submit">JOIN THE WAITLIST</button>
+    </form>
+
     <div class="error" id="error">Please enter a valid email address.</div>
   </div>
 </div>
 
 <script>
-function toggle() {
-  const p = document.getElementById("password");
-  p.type = p.type === "password" ? "text" : "password";
-}
-
-function validate() {
-  const e = document.getElementById("email").value;
+function validateForm() {
+  const email = document.getElementById("email").value;
   const error = document.getElementById("error");
-  if (!e.includes("@") || !e.includes(".")) {
+
+  if (!email.includes("@") || !email.includes(".")) {
     error.style.opacity = 1;
-  } else {
-    error.style.opacity = 0;
-    alert("Welcome to Estania Rosetta ✨");
+    return false;
   }
+
+  error.style.opacity = 0;
+  return true;
 }
 
-/* ESTANIA ROSETTA SYMBOL PARTICLES */
+/* PARTICLES */
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
@@ -184,7 +162,6 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
-/* Rosette + Astral glyphs */
 const symbols = ["❈","✶","✦","❂","✹","☉","☿","✵"];
 
 const particles = Array.from({ length: 45 }, () => ({
@@ -200,16 +177,13 @@ const particles = Array.from({ length: 45 }, () => ({
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   particles.forEach(p => {
     p.y -= p.speed;
     p.rotation += p.rotSpeed;
-
     if (p.y < -40) {
       p.y = canvas.height + 40;
       p.x = Math.random() * canvas.width;
     }
-
     ctx.save();
     ctx.globalAlpha = p.opacity;
     ctx.translate(p.x, p.y);
@@ -219,13 +193,10 @@ function animate() {
     ctx.fillText(p.symbol, 0, 0);
     ctx.restore();
   });
-
   requestAnimationFrame(animate);
 }
-
 animate();
 </script>
 
 </body>
 </html>
-
