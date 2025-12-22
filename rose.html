@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Estania Rosetta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Luxury Serif -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- Old English -->
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Cinzel', serif;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at top, #f8f8f8, #e6e6e6);
+  color: #222;
+}
+
+/* Canvas */
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Center layout */
+.container {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Glass Card */
+.card {
+  width: 360px;
+  padding: 40px 30px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(22px) saturate(120%);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25),
+              inset 0 1px 0 rgba(255,255,255,0.6);
+  animation: fadeUp 1.2s ease;
+  text-align: center;
+}
+
+/* Sigil */
+.sigil {
+  font-size: 48px;
+  margin-bottom: 18px;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Title */
+.title {
+  font-size: 36px;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+}
+.title span {
+  font-family: 'UnifrakturCook', cursive;
+  display: inline-block;
+  animation: bounce 2.2s infinite;
+  position: relative;
+}
+.title span { animation-delay: calc(var(--i) * 0.08s); }
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.8);
+  font-size: 15px;
+  outline: none;
+  transition: all .3s ease;
+}
+input:focus {
+  transform: scale(1.03);
+  box-shadow: 0 0 12px rgba(255,255,255,.8);
+}
+
+/* Password row */
+.password-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+.show { cursor: pointer; font-weight: bold; }
+
+/* Button */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg,#111,#444);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform .3s ease;
+}
+button:hover { transform: translateY(-3px); }
+
+/* Error */
+.error {
+  margin-top: 15px;
+  font-size: 13px;
+  opacity: 0;
+  color: #b71c1c;
+  transition: .4s;
+}
+
+/* Animations */
+@keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+@keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+</style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="container">
+  <div class="card">
+    <div class="sigil">❈</div>
+
+    <div class="title">
+      <span style="--i:1">E</span><span style="--i:2">S</span><span style="--i:3">T</span><span style="--i:4">A</span><span style="--i:5">N</span><span style="--i:6">I</span><span style="--i:7">A</span><br>
+      <span style="--i:8">R</span><span style="--i:9">O</span><span style="--i:10">S</span><span style="--i:11">E</span><span style="--i:12">T</span><span style="--i:13">T</span><span style="--i:14">A</span>
+    </div>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <div class="password-row">
+      <span>🔒 Password</span>
+      <span class="show" onclick="toggle()">SHOW</span>
+    </div>
+
+    <button onclick="validate()">SUBMIT</button>
+    <div class="error" id="error">Please enter a valid email address.</div>
+  </div>
+</div>
+
+<script>
+function toggle() {
+  const p = document.getElementById("password");
+  p.type = p.type === "password" ? "text" : "password";
+}
+
+function validate() {
+  const e = document.getElementById("email").value;
+  const error = document.getElementById("error");
+  if (!e.includes("@") || !e.includes(".")) {
+    error.style.opacity = 1;
+  } else {
+    error.style.opacity = 0;
+    alert("Welcome to Estania Rosetta ✨");
+  }
+}
+
+/* ESTANIA ROSETTA SYMBOL PARTICLES */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+/* Rosette + Astral glyphs */
+const symbols = ["❈","✶","✦","❂","✹","☉","☿","✵"];
+
+const particles = Array.from({ length: 45 }, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  size: Math.random() * 26 + 14,
+  speed: Math.random() * 0.3 + 0.1,
+  opacity: Math.random() * 0.4 + 0.3,
+  symbol: symbols[Math.floor(Math.random() * symbols.length)],
+  rotation: Math.random() * Math.PI * 2,
+  rotSpeed: (Math.random() - 0.5) * 0.008
+}));
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.y -= p.speed;
+    p.rotation += p.rotSpeed;
+
+    if (p.y < -40) {
+      p.y = canvas.height + 40;
+      p.x = Math.random() * canvas.width;
+    }
+
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.font = `${p.size}px Cinzel`;
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fillText(p.symbol, 0, 0);
+    ctx.restore();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
