@@ -115,7 +115,7 @@ button:hover { transform: translateY(-3px); }
 }
 .socials a {
   font-size: 28px;
-  color: #222; /* matches site */
+  color: #222;
   display: inline-block;
   animation: bounce 2.2s infinite;
   transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.3s ease;
@@ -234,39 +234,49 @@ function animate() {
 }
 animate();
 
-/* CURSOR ORB WITH SHIMMER TRAIL */
+/* CURSOR ORB WITH SHIMMER TRAIL (Desktop & Mobile) */
 const orbCanvas = document.getElementById("cursorOrb");
 const orbCtx = orbCanvas.getContext("2d");
-orbCanvas.width = innerWidth; orbCanvas.height = innerHeight;
+function resizeOrb() { orbCanvas.width = innerWidth; orbCanvas.height = innerHeight; }
+resizeOrb(); window.addEventListener("resize", resizeOrb);
 
-let mouse = { x: innerWidth/2, y: innerHeight/2 };
+let pointer = { x: innerWidth/2, y: innerHeight/2, active:false };
 let orb = { x: innerWidth/2, y: innerHeight/2, radius: 15 };
 const trail = [];
 
-window.addEventListener("mousemove", e => { mouse.x=e.clientX; mouse.y=e.clientY; });
+// Mouse movement
+window.addEventListener("mousemove", e => { pointer.x=e.clientX; pointer.y=e.clientY; pointer.active=true; });
+// Touch movement
+window.addEventListener("touchmove", e => { 
+  pointer.x = e.touches[0].clientX; 
+  pointer.y = e.touches[0].clientY; 
+  pointer.active = true; 
+}, {passive:true});
+window.addEventListener("touchend", ()=>{ pointer.active=false; });
 
 function drawOrb(){
   orbCtx.clearRect(0,0,orbCanvas.width,orbCanvas.height);
 
-  orb.x += (mouse.x - orb.x) * 0.15;
-  orb.y += (mouse.y - orb.y) * 0.15;
+  if(pointer.active){
+    orb.x += (pointer.x - orb.x) * 0.15;
+    orb.y += (pointer.y - orb.y) * 0.15;
 
-  trail.push({x: orb.x, y: orb.y, alpha:0.25});
-  if(trail.length>20) trail.shift();
+    trail.push({x: orb.x, y: orb.y, alpha:0.25});
+    if(trail.length>20) trail.shift();
 
-  trail.forEach((t, i) => {
+    trail.forEach((t, i) => {
+      orbCtx.beginPath();
+      orbCtx.arc(t.x, t.y, orb.radius, 0, Math.PI*2);
+      const shimmer = Math.sin(Date.now()/200 + i/2)*0.1 + 0.2;
+      orbCtx.fillStyle = `rgba(0,0,0,${t.alpha*(i/20) + shimmer})`;
+      orbCtx.fill();
+    });
+
     orbCtx.beginPath();
-    orbCtx.arc(t.x, t.y, orb.radius, 0, Math.PI*2);
-    const shimmer = Math.sin(Date.now()/200 + i/2)*0.1 + 0.2;
-    orbCtx.fillStyle = `rgba(0,0,0,${t.alpha*(i/20) + shimmer})`;
+    orbCtx.arc(orb.x, orb.y, orb.radius, 0, Math.PI*2);
+    orbCtx.fillStyle = "rgba(0,0,0,0.15)";
     orbCtx.fill();
-  });
-
-  // main orb
-  orbCtx.beginPath();
-  orbCtx.arc(orb.x, orb.y, orb.radius, 0, Math.PI*2);
-  orbCtx.fillStyle = "rgba(0,0,0,0.15)";
-  orbCtx.fill();
+  }
 
   requestAnimationFrame(drawOrb);
 }
