@@ -18,28 +18,45 @@ body{
   overflow:hidden;
 }
 
-/* ================= HEADER ================= */
-.header{
+/* ===== CANVAS ===== */
+#bg{
   position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:64px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 22px;
-  z-index:50;
-  pointer-events:none;
+  inset:0;
+  z-index:0;
 }
-.header > *{pointer-events:auto}
 
-/* MENU ICON */
+/* ===== PAPER ===== */
+.paper{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  z-index:1;
+}
+
+/* ===== BRAND ===== */
+.brand{
+  position:fixed;
+  top:24px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+}
+.brand text{
+  font-family:"UnifrakturCook",cursive;
+  font-size:clamp(20px, 4vw, 30px);
+  letter-spacing:3px;
+}
+
+/* ===== MENU TOGGLE ===== */
 .menu-toggle{
+  position:fixed;
+  top:22px;
+  left:22px;
   width:42px;
   height:42px;
   cursor:pointer;
-  position:relative;
+  z-index:25;
 }
 .menu-toggle::before,
 .menu-toggle::after{
@@ -51,96 +68,69 @@ body{
 }
 .menu-toggle::after{transform:rotate(-45deg)}
 
-/* LOGO (RIGHT SIDE) */
-.logo{
-  font-family:"UnifrakturCook",cursive;
-  font-size:22px;
-  letter-spacing:2px;
-  white-space:nowrap;
-}
-
-/* ================= MENU ================= */
+/* ===== MENU ===== */
 .menu-panel{
   position:fixed;
-  top:12px;
-  left:12px;
-  width:320px;
+  top:14px;
+  left:14px;
+  width:clamp(240px, 70vw, 320px);
   max-height:0;
   overflow:hidden;
-  background:rgba(245,245,245,.85);
+  background:rgba(245,245,245,.88);
   backdrop-filter:blur(32px);
-  border-radius:18px;
+  border-radius:20px;
   border:1px solid rgba(255,255,255,.7);
   box-shadow:0 26px 60px rgba(0,0,0,.18);
   transition:max-height .8s cubic-bezier(.22,.85,.3,1);
-  z-index:40;
+  z-index:18;
 }
-.menu-open .menu-panel{max-height:460px}
+.menu-open .menu-panel{max-height:420px}
 
 .menu{
   padding:86px 26px 26px;
   opacity:0;
-  transition:.4s ease .3s;
+  transition:.35s ease .3s;
 }
 .menu-open .menu{opacity:1}
 
 .menu li{
   list-style:none;
-  font-size:20px;
+  font-size:clamp(16px, 4vw, 20px);
   font-weight:600;
   letter-spacing:.22em;
   margin-bottom:22px;
 }
 .menu a{color:#111;text-decoration:none}
 
-/* ================= BACKGROUND ================= */
-#bg{
-  position:fixed;
-  inset:0;
-  z-index:0;
-}
-
-/* ================= MOBILE TUNING ================= */
-@media (max-width:768px){
-  .header{
-    height:56px;
-    padding:0 16px;
-  }
-  .logo{
-    font-size:18px;
-    letter-spacing:1.5px;
-  }
-  .menu-panel{
-    width:280px;
-  }
-  .menu li{
-    font-size:17px;
-  }
-}
-
-/* ================= FOOTER ================= */
+/* ===== FOOTER ===== */
 footer{
   position:fixed;
   bottom:6px;
-  left:0;
-  right:0;
+  left:0;right:0;
   text-align:center;
   font-size:8px;
   letter-spacing:.36em;
   opacity:.35;
+  z-index:10;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="menu-toggle" id="toggle"></div>
-  <div class="logo">Estania Rosetta</div>
+<canvas id="bg"></canvas>
+<div class="paper"></div>
+
+<!-- BRAND -->
+<div class="brand">
+  <svg width="320" height="60">
+    <text x="160" y="42" text-anchor="middle">Estania Rosetta</text>
+  </svg>
 </div>
 
 <!-- MENU -->
+<div class="menu-toggle" id="toggle"></div>
+
 <div class="menu-panel">
   <ul class="menu">
     <li><a href="shop.html">SHOP</a></li>
@@ -149,14 +139,66 @@ footer{
   </ul>
 </div>
 
-<!-- BACKGROUND PLACEHOLDER -->
-<canvas id="bg"></canvas>
-
 <footer>© 2026 ESTANIA ROSETTA</footer>
 
 <script>
+/* ===== ORGANIC PREMIUM ANIMATION (RESTORED) ===== */
+const c=document.getElementById("bg"),ctx=c.getContext("2d");
+let w,h,mx=0,my=0,time=0;
+
+function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+addEventListener("resize",resize);resize();
+
+addEventListener("mousemove",e=>{
+  mx=(e.clientX/w-.5)*12;
+  my=(e.clientY/h-.5)*12;
+});
+
+const forms=[...Array(12)].map(()=>({
+  x:Math.random()*w,
+  y:Math.random()*h,
+  r:Math.random()*160+120,
+  n:Math.random()*10,
+  s:Math.random()*.0006+.0003,
+  d:Math.random()*.12+.04
+}));
+
+function drawForm(f){
+  ctx.beginPath();
+  for(let a=0;a<=Math.PI*2;a+=0.3){
+    const n=Math.sin(a*3+time*f.s+f.n)+Math.cos(a*2+time*f.s*1.4);
+    const rr=f.r+n*20;
+    const x=Math.cos(a)*rr;
+    const y=Math.sin(a)*rr;
+    a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#f2f2f2";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle="rgba(110,110,110,.22)";
+  ctx.lineWidth=1.2;
+
+  forms.forEach(f=>{
+    f.y-=f.d;
+    if(f.y<-f.r*2){f.y=h+f.r*2;f.x=Math.random()*w}
+    ctx.save();
+    ctx.translate(f.x+mx*.2,f.y+my*.2);
+    drawForm(f);
+    ctx.restore();
+  });
+
+  time+=16;
+  requestAnimationFrame(animate);
+}
+animate();
+
 /* MENU */
-const toggle=document.getElementById("toggle");
 toggle.onclick=e=>{
   e.stopPropagation();
   document.body.classList.toggle("menu-open");
