@@ -5,7 +5,7 @@
 <title>Estania Rosetta — You’re In</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -19,84 +19,69 @@ body{
   align-items:center;
   justify-content:center;
   text-align:center;
+  padding:20px;
 }
 
-/* ===== GLASS CARD ===== */
+/* ===== CARD ===== */
 .card{
-  width:360px;
-  padding:42px 30px;
-  background:rgba(255,255,255,.35);
-  backdrop-filter:blur(20px) saturate(120%);
-  border-radius:22px;
+  width:100%;
+  max-width:320px;
+  padding:28px 22px;
+  background:rgba(255,255,255,.38);
+  backdrop-filter:blur(18px) saturate(120%);
+  border-radius:18px;
   border:1px solid rgba(255,255,255,.6);
   box-shadow:
-    0 25px 60px rgba(0,0,0,.22),
+    0 18px 40px rgba(0,0,0,.18),
     inset 0 1px 0 rgba(255,255,255,.6);
 }
 
 /* ===== LOGO ===== */
 .title{
   font-family:"UnifrakturCook",cursive;
-  font-size:34px;
-  letter-spacing:3px;
-  margin-bottom:18px;
+  font-size:26px;
+  letter-spacing:2px;
+  margin-bottom:14px;
 }
 
 /* ===== MESSAGE ===== */
 .message{
-  font-size:15px;
-  line-height:1.6;
+  font-size:14px;
+  line-height:1.55;
   opacity:.9;
 }
 
 /* ===== BETA ===== */
 .beta{
-  margin-top:28px;
+  margin-top:22px;
   display:inline-block;
-  padding:8px 16px;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:.4em;
+  padding:7px 14px;
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:.38em;
   opacity:.45;
   cursor:pointer;
-  transition:opacity .3s ease, transform .3s ease;
+  transition:opacity .25s ease, transform .25s ease;
 }
 
 .beta:hover{
-  opacity:.9;
-  transform:translateY(-2px);
+  opacity:.85;
+  transform:translateY(-1px);
 }
 
 /* ===== FOOTER ===== */
 .footer{
-  margin-top:18px;
-  font-size:11px;
-  opacity:.5;
+  margin-top:14px;
+  font-size:10px;
+  opacity:.45;
 }
-</style>
-</head>
 
-<body>
-
-<div class="card">
-  <div class="title">Estania Rosetta</div>
-
-  <div class="message">
-    You’re on the list.<br>
-    You will be notified when access opens.
-  </div>
-
-  <!-- BETA (manual) -->
-  <div class="beta" onclick="goBeta()">BETA</div>
-
-  <div class="footer">© 2026</div>
-</div>
-
-<script>
-function goBeta(){
-  window.location.href = "nxt.html";
-}
-</script>
-
-</body>
-</html>
+/* ===== DESKTOP ENHANCEMENT ===== */
+@media (min-width: 768px){
+  .card{
+    max-width:360px;
+    padding:40px 30px;
+    border-radius:22px;
+  }
+  .title{
+    font-size:34px
