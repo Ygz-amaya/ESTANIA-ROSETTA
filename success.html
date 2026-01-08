@@ -2,86 +2,167 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Estania Rosetta — You’re In</title>
+<title>Estania Rosetta</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 
 body{
-  font-family:"Cinzel",serif;
-  background:#ededed;
-  color:#222;
+  font-family:"Inter",system-ui;
+  background:#f2f2f2;
+  color:#111;
+  overflow:hidden;
+}
+
+/* ================= HEADER ================= */
+.header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:64px;
   display:flex;
   align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:20px;
+  justify-content:space-between;
+  padding:0 22px;
+  z-index:50;
+  pointer-events:none;
 }
+.header > *{pointer-events:auto}
 
-/* ===== CARD ===== */
-.card{
-  width:100%;
-  max-width:320px;
-  padding:28px 22px;
-  background:rgba(255,255,255,.38);
-  backdrop-filter:blur(18px) saturate(120%);
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.6);
-  box-shadow:
-    0 18px 40px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.6);
-}
-
-/* ===== LOGO ===== */
-.title{
-  font-family:"UnifrakturCook",cursive;
-  font-size:26px;
-  letter-spacing:2px;
-  margin-bottom:14px;
-}
-
-/* ===== MESSAGE ===== */
-.message{
-  font-size:14px;
-  line-height:1.55;
-  opacity:.9;
-}
-
-/* ===== BETA ===== */
-.beta{
-  margin-top:22px;
-  display:inline-block;
-  padding:7px 14px;
-  font-size:9px;
-  font-weight:600;
-  letter-spacing:.38em;
-  opacity:.45;
+/* MENU ICON */
+.menu-toggle{
+  width:42px;
+  height:42px;
   cursor:pointer;
-  transition:opacity .25s ease, transform .25s ease;
+  position:relative;
+}
+.menu-toggle::before,
+.menu-toggle::after{
+  content:"";
+  position:absolute;
+  inset:13px;
+  border:2px solid #111;
+  transform:rotate(45deg);
+}
+.menu-toggle::after{transform:rotate(-45deg)}
+
+/* LOGO (RIGHT SIDE) */
+.logo{
+  font-family:"UnifrakturCook",cursive;
+  font-size:22px;
+  letter-spacing:2px;
+  white-space:nowrap;
 }
 
-.beta:hover{
-  opacity:.85;
-  transform:translateY(-1px);
+/* ================= MENU ================= */
+.menu-panel{
+  position:fixed;
+  top:12px;
+  left:12px;
+  width:320px;
+  max-height:0;
+  overflow:hidden;
+  background:rgba(245,245,245,.85);
+  backdrop-filter:blur(32px);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 26px 60px rgba(0,0,0,.18);
+  transition:max-height .8s cubic-bezier(.22,.85,.3,1);
+  z-index:40;
+}
+.menu-open .menu-panel{max-height:460px}
+
+.menu{
+  padding:86px 26px 26px;
+  opacity:0;
+  transition:.4s ease .3s;
+}
+.menu-open .menu{opacity:1}
+
+.menu li{
+  list-style:none;
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.22em;
+  margin-bottom:22px;
+}
+.menu a{color:#111;text-decoration:none}
+
+/* ================= BACKGROUND ================= */
+#bg{
+  position:fixed;
+  inset:0;
+  z-index:0;
 }
 
-/* ===== FOOTER ===== */
-.footer{
-  margin-top:14px;
-  font-size:10px;
-  opacity:.45;
-}
-
-/* ===== DESKTOP ENHANCEMENT ===== */
-@media (min-width: 768px){
-  .card{
-    max-width:360px;
-    padding:40px 30px;
-    border-radius:22px;
+/* ================= MOBILE TUNING ================= */
+@media (max-width:768px){
+  .header{
+    height:56px;
+    padding:0 16px;
   }
-  .title{
-    font-size:34px
+  .logo{
+    font-size:18px;
+    letter-spacing:1.5px;
+  }
+  .menu-panel{
+    width:280px;
+  }
+  .menu li{
+    font-size:17px;
+  }
+}
+
+/* ================= FOOTER ================= */
+footer{
+  position:fixed;
+  bottom:6px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:8px;
+  letter-spacing:.36em;
+  opacity:.35;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="menu-toggle" id="toggle"></div>
+  <div class="logo">Estania Rosetta</div>
+</div>
+
+<!-- MENU -->
+<div class="menu-panel">
+  <ul class="menu">
+    <li><a href="shop.html">SHOP</a></li>
+    <li><a href="locations.html">LOCATIONS</a></li>
+    <li><a href="magazine.html">MAGAZINE</a></li>
+  </ul>
+</div>
+
+<!-- BACKGROUND PLACEHOLDER -->
+<canvas id="bg"></canvas>
+
+<footer>© 2026 ESTANIA ROSETTA</footer>
+
+<script>
+/* MENU */
+const toggle=document.getElementById("toggle");
+toggle.onclick=e=>{
+  e.stopPropagation();
+  document.body.classList.toggle("menu-open");
+};
+addEventListener("click",()=>document.body.classList.remove("menu-open"));
+</script>
+
+</body>
+</html>
